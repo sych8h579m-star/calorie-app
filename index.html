@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="カロリー記録">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>カロリー記録</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f7fb;color:#172033}
+    main{max-width:520px;margin:0 auto;padding:24px 16px 40px}
+    h1{font-size:22px;margin:0 0 6px}
+    .date{color:#667085;font-size:14px}
+    .card{background:white;border:1px solid #e4e7ec;border-radius:20px;padding:20px;margin-top:16px}
+    .total{text-align:center;padding:8px 0 18px}
+    .total-num{font-size:54px;font-weight:800;letter-spacing:-2px}
+    .unit{font-size:18px;font-weight:600;margin-left:6px}
+    label{display:block;font-weight:700;font-size:14px;margin-bottom:8px}
+    .row{display:flex;gap:10px}
+    input{min-width:0;flex:1;height:54px;border:1px solid #d0d5dd;border-radius:14px;padding:0 16px;font-size:20px}
+    input:focus{outline:3px solid #dbeafe;border-color:#2563eb}
+    button{height:54px;border:0;border-radius:14px;font-size:17px;font-weight:700;padding:0 20px;cursor:pointer}
+    .add{background:#2563eb;color:white}
+    .sub{background:#f2f4f7;color:#344054}
+    .msg{height:22px;color:#b42318;font-size:13px;margin-top:7px}
+    .head{display:flex;justify-content:space-between;align-items:center}
+    .head h2{font-size:18px;margin:0}
+    .count{color:#667085;font-size:14px}
+    .entry{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #eaecf0}
+    .entry:last-child{border-bottom:0}
+    .kcal{font-weight:700}
+    .time{color:#667085;font-size:13px;margin-top:3px}
+    .delete{height:40px;padding:0 12px;background:transparent;color:#667085;font-size:14px}
+    .empty{text-align:center;color:#667085;padding:22px 0}
+    .history-btn{width:100%;margin-top:14px;background:#f2f4f7;color:#344054}
+    #history{display:none}
+    .day{padding:13px 0;border-bottom:1px solid #eaecf0;display:flex;justify-content:space-between}
+    .day:last-child{border-bottom:0}
+    .install-note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:12px 14px;font-size:13px;color:#1e3a8a;margin-top:16px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>カロリー記録</h1>
+  <div class="date" id="date"></div>
+
+  <section class="card">
+    <div class="total">
+      <div><span class="total-num" id="total">0</span><span class="unit">kcal</span></div>
+    </div>
+    <form id="form">
+      <label for="calories">カロリーを入力</label>
+      <div class="row">
+        <input id="calories" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="例：650" autocomplete="off">
+        <button class="add" type="submit">＋ 追加</button>
+      </div>
+      <div class="msg" id="msg" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="head">
+      <h2>今日の記録</h2>
+      <span class="count" id="count">0件</span>
+    </div>
+    <div id="entries"></div>
+    <button type="button" class="history-btn" id="historyBtn">過去の記録を見る</button>
+  </section>
+
+  <section class="card" id="history">
+    <div class="head"><h2>過去の記録</h2></div>
+    <div id="days"></div>
+  </section>
+
+  <div class="install-note">このページをスマホのホーム画面に追加すると、アプリのように使えます。</div>
+</main>
+
+<script>
+(() => {
+  const KEY = "calorie-records-v1";
+  const $ = id => document.getElementById(id);
+  const todayKey = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  };
+  const load = () => {
+    try { return JSON.parse(localStorage.getItem(KEY) || "{}"); }
+    catch { return {}; }
+  };
+  const save = data => localStorage.setItem(KEY, JSON.stringify(data));
+  const data = load();
+  const key = todayKey();
+  if (!Array.isArray(data[key])) data[key] = [];
+
+  $("date").textContent = new Intl.DateTimeFormat("ja-JP",{month:"long",day:"numeric",weekday:"short"}).format(new Date());
+
+  function render() {
+    const list = data[key];
+    const total = list.reduce((s,e)=>s+e.kcal,0);
+    $("total").textContent = total.toLocaleString("ja-JP");
+    $("count").textContent = `${list.length}件`;
+
+    $("entries").innerHTML = list.length ? list.map((e,i)=>`
+      <div class="entry">
+        <div><div class="kcal">${e.kcal.toLocaleString("ja-JP")} kcal</div><div class="time">${e.time}</div></div>
+        <button type="button" class="delete" data-i="${i}">削除</button>
+      </div>`).join("") : `<div class="empty">まだ記録がありません</div>`;
+
+    document.querySelectorAll(".delete").forEach(btn => {
+      btn.addEventListener("click", () => {
+        list.splice(Number(btn.dataset.i),1);
+        save(data); render();
+      });
+    });
+  }
+
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const n = Number($("calories").value);
+    $("msg").textContent = "";
+    if (!Number.isFinite(n) || n < 1 || n > 10000) {
+      $("msg").textContent = "1〜10,000 kcalで入力してください";
+      return;
+    }
+    data[key].push({kcal:Math.round(n), time:new Intl.DateTimeFormat("ja-JP",{hour:"2-digit",minute:"2-digit"}).format(new Date())});
+    save(data); $("calories").value = ""; render(); $("calories").focus();
+  });
+
+  $("historyBtn").addEventListener("click", () => {
+    const box = $("history");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+    if (box.style.display === "block") {
+      const keys = Object.keys(data).sort().reverse();
+      $("days").innerHTML = keys.length ? keys.map(k => {
+        const total = data[k].reduce((s,e)=>s+e.kcal,0);
+        const d = new Date(k+"T00:00:00");
+        const label = new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"numeric",day:"numeric",weekday:"short"}).format(d);
+        return `<div class="day"><span>${label}</span><strong>${total.toLocaleString("ja-JP")} kcal</strong></div>`;
+      }).join("") : `<div class="empty">履歴なし</div>`;
+    }
+  });
+
+  render();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
