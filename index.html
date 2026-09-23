@@ -1,291 +1,77 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#2563eb">
-  <link rel="manifest" href="./manifest.json">
-  <title>カロリー記録</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f7fb;
-      color: #222;
-    }
-    .container {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
-    }
-    h1 { font-size: 28px; margin: 0 0 20px; }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.06);
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      margin: 12px 0 7px;
-    }
-    label:first-child { margin-top: 0; }
-    input {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid #d5d9e2;
-      border-radius: 10px;
-      font-size: 17px;
-      background: #fff;
-    }
-    input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-    }
-    button {
-      border: 0;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .add {
-      width: 100%;
-      margin-top: 14px;
-      padding: 13px;
-      background: #2563eb;
-      color: white;
-      font-weight: 700;
-    }
-    .total {
-      text-align: center;
-      padding: 8px 0 4px;
-    }
-    .total-number {
-      font-size: 42px;
-      font-weight: 800;
-      color: #2563eb;
-    }
-    .unit { font-size: 17px; margin-left: 4px; }
-    .count {
-      color: #666;
-      margin-top: 3px;
-    }
-    .section-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0 0 12px;
-    }
-    .record {
-      padding: 12px 0;
-      border-top: 1px solid #eee;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-    .record:first-child { border-top: 0; }
-    .record-main { flex: 1; min-width: 0; }
-    .record-top {
-      font-weight: 700;
-      font-size: 16px;
-    }
-    .memo {
-      color: #555;
-      margin-top: 4px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-    .delete {
-      background: #f0f1f3;
-      color: #555;
-      padding: 7px 10px;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
-    .day {
-      padding: 10px 0;
-      border-top: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-    }
-    .empty { color: #777; text-align: center; padding: 8px 0; }
-    .hint { color: #777; font-size: 13px; margin-top: 6px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="./manifest.json">
+<title>カロリー記録</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f7fb;color:#222}
+.container{max-width:520px;margin:0 auto;padding:24px 16px 40px}h1{font-size:28px;margin:0 0 20px}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+label{display:block;font-weight:600;margin:12px 0 7px}label:first-child{margin-top:0}
+input{width:100%;padding:13px 14px;border:1px solid #d5d9e2;border-radius:10px;font-size:17px;background:#fff}
+input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+button{border:0;border-radius:10px;cursor:pointer;font-size:16px}.add{width:100%;margin-top:14px;padding:13px;background:#2563eb;color:#fff;font-weight:700}
+.total{text-align:center;padding:8px 0 4px}.total-number{font-size:42px;font-weight:800;color:#2563eb}.unit{font-size:17px;margin-left:4px}.count{color:#666;margin-top:3px}.selected-date{font-size:14px;color:#555;margin-top:4px}
+.section-title{font-size:20px;font-weight:700;margin:0 0 12px}.record{padding:12px 0;border-top:1px solid #eee;display:flex;gap:10px;align-items:flex-start}.record:first-child{border-top:0}
+.record-main{flex:1;min-width:0}.record-top{font-weight:700;font-size:16px}.memo{color:#555;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}
+.delete{background:#f0f1f3;color:#555;padding:7px 10px;font-size:13px;flex-shrink:0}.day{padding:10px 0;border-top:1px solid #eee;display:flex;justify-content:space-between;cursor:pointer}
+.empty{color:#777;text-align:center;padding:8px 0}.hint{color:#777;font-size:13px;margin-top:6px}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>カロリー記録</h1>
-
-    <div class="card">
-      <label for="calories">カロリー</label>
-      <input id="calories" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="例：650">
-
-      <label for="memo">メモ（任意）</label>
-      <input id="memo" type="text" maxlength="100" placeholder="例：鶏胸肉・ご飯・味噌汁">
-      <div class="hint">何を食べたかなど、自由にメモできます</div>
-
-      <button class="add" id="addBtn">＋ 追加</button>
-    </div>
-
-    <div class="card">
-      <div class="total">
-        <div>
-          <span class="total-number" id="todayTotal">0</span><span class="unit">kcal</span>
-        </div>
-        <div class="count" id="todayCount">0件</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">今日の記録</div>
-      <div id="todayRecords"></div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">過去の記録</div>
-      <div id="history"></div>
-    </div>
-  </div>
-
-  <script>
-    const STORAGE_KEY = "calorie-records-v1";
-
-    function loadRecords() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      } catch {
-        return [];
-      }
-    }
-
-    function saveRecords(records) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-    }
-
-    function dateKey(date = new Date()) {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, "0");
-      const d = String(date.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
-
-    function timeText(iso) {
-      const d = new Date(iso);
-      return d.toLocaleTimeString("ja-JP", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.textContent = text ?? "";
-      return div.innerHTML;
-    }
-
-    function render() {
-      const records = loadRecords();
-      const today = dateKey();
-
-      const todayRecords = records
-        .filter(r => r.date === today)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      const total = todayRecords.reduce((sum, r) => sum + r.calories, 0);
-      document.getElementById("todayTotal").textContent = total.toLocaleString("ja-JP");
-      document.getElementById("todayCount").textContent = `${todayRecords.length}件`;
-
-      const todayEl = document.getElementById("todayRecords");
-      if (todayRecords.length === 0) {
-        todayEl.innerHTML = '<div class="empty">まだ記録がありません</div>';
-      } else {
-        todayEl.innerHTML = todayRecords.map(r => `
-          <div class="record">
-            <div class="record-main">
-              <div class="record-top">${timeText(r.createdAt)}　${r.calories.toLocaleString("ja-JP")} kcal</div>
-              ${r.memo ? `<div class="memo">${escapeHtml(r.memo)}</div>` : ""}
-            </div>
-            <button class="delete" onclick="deleteRecord('${r.id}')">削除</button>
-          </div>
-        `).join("");
-      }
-
-      const groups = {};
-      records.forEach(r => {
-        groups[r.date] = (groups[r.date] || 0) + r.calories;
-      });
-
-      const dates = Object.keys(groups).sort().reverse();
-      const historyEl = document.getElementById("history");
-      if (dates.length === 0) {
-        historyEl.innerHTML = '<div class="empty">まだ記録がありません</div>';
-      } else {
-        historyEl.innerHTML = dates.map(date => `
-          <div class="day">
-            <span>${date}</span>
-            <strong>${groups[date].toLocaleString("ja-JP")} kcal</strong>
-          </div>
-        `).join("");
-      }
-    }
-
-    function addRecord() {
-      const caloriesInput = document.getElementById("calories");
-      const memoInput = document.getElementById("memo");
-      const calories = Number(caloriesInput.value);
-      const memo = memoInput.value.trim();
-
-      if (!Number.isInteger(calories) || calories < 1 || calories > 10000) {
-        alert("カロリーは1〜10,000 kcalの整数で入力してください。");
-        caloriesInput.focus();
-        return;
-      }
-
-      const records = loadRecords();
-      records.push({
-        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-        calories,
-        memo,
-        date: dateKey(),
-        createdAt: new Date().toISOString()
-      });
-      saveRecords(records);
-
-      caloriesInput.value = "";
-      memoInput.value = "";
-      caloriesInput.focus();
-      render();
-    }
-
-    window.deleteRecord = function(id) {
-      const records = loadRecords();
-      const target = records.find(r => r.id === id);
-      if (!target) return;
-
-      if (!confirm(`${target.calories} kcalの記録を削除しますか？`)) return;
-
-      saveRecords(records.filter(r => r.id !== id));
-      render();
-    };
-
-    document.getElementById("addBtn").addEventListener("click", addRecord);
-
-    document.getElementById("calories").addEventListener("keydown", e => {
-      if (e.key === "Enter") addRecord();
-    });
-
-    document.getElementById("memo").addEventListener("keydown", e => {
-      if (e.key === "Enter") addRecord();
-    });
-
-    render();
-
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
-    }
-  </script>
+<div class="container">
+<h1>カロリー記録</h1>
+<div class="card">
+<label for="recordDate">記録する日付</label>
+<input id="recordDate" type="date">
+<label for="calories">カロリー</label>
+<input id="calories" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="例：650">
+<label for="memo">メモ（任意）</label>
+<input id="memo" type="text" maxlength="100" placeholder="例：鶏胸肉・ご飯・味噌汁">
+<div class="hint">日付を変えれば、前日などの記録も追加できます</div>
+<button class="add" id="addBtn">＋ 追加</button>
+</div>
+<div class="card"><div class="total"><div><span class="total-number" id="selectedTotal">0</span><span class="unit">kcal</span></div><div class="count" id="selectedCount">0件</div><div class="selected-date" id="selectedDateText"></div></div></div>
+<div class="card"><div class="section-title">選択日の記録</div><div id="selectedRecords"></div></div>
+<div class="card"><div class="section-title">過去の記録</div><div id="history"></div></div>
+</div>
+<script>
+const STORAGE_KEY="calorie-records-v1",dateInput=document.getElementById("recordDate");
+function loadRecords(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")}catch{return[]}}
+function saveRecords(r){localStorage.setItem(STORAGE_KEY,JSON.stringify(r))}
+function dateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return`${y}-${m}-${day}`}
+function timeText(i){return new Date(i).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})}
+function escapeHtml(t){const d=document.createElement("div");d.textContent=t??"";return d.innerHTML}
+function formatDate(s){const[a,b,c]=s.split("-");return`${a}年${Number(b)}月${Number(c)}日`}
+function render(){
+ const records=loadRecords(),selected=dateInput.value||dateKey();
+ const sr=records.filter(r=>r.date===selected).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+ const total=sr.reduce((s,r)=>s+r.calories,0);
+ document.getElementById("selectedTotal").textContent=total.toLocaleString("ja-JP");
+ document.getElementById("selectedCount").textContent=`${sr.length}件`;
+ document.getElementById("selectedDateText").textContent=formatDate(selected);
+ document.getElementById("selectedRecords").innerHTML=sr.length?sr.map(r=>`<div class="record"><div class="record-main"><div class="record-top">${timeText(r.createdAt)}　${r.calories.toLocaleString("ja-JP")} kcal</div>${r.memo?`<div class="memo">${escapeHtml(r.memo)}</div>`:""}</div><button class="delete" onclick="deleteRecord('${r.id}')">削除</button></div>`).join(""):'<div class="empty">この日の記録はありません</div>';
+ const groups={};records.forEach(r=>groups[r.date]=(groups[r.date]||0)+r.calories);
+ const dates=Object.keys(groups).sort().reverse();
+ document.getElementById("history").innerHTML=dates.length?dates.map(d=>`<div class="day" onclick="selectDate('${d}')"><span>${formatDate(d)}</span><strong>${groups[d].toLocaleString("ja-JP")} kcal</strong></div>`).join(""):'<div class="empty">まだ記録がありません</div>';
+}
+function selectDate(d){dateInput.value=d;render()}
+function addRecord(){
+ const ci=document.getElementById("calories"),mi=document.getElementById("memo"),cal=Number(ci.value),date=dateInput.value||dateKey(),memo=mi.value.trim();
+ if(!Number.isInteger(cal)||cal<1||cal>10000){alert("カロリーは1〜10,000 kcalの整数で入力してください。");ci.focus();return}
+ const records=loadRecords();records.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,calories:cal,memo,date,createdAt:new Date().toISOString()});
+ saveRecords(records);ci.value="";mi.value="";ci.focus();render();
+}
+window.deleteRecord=function(id){const records=loadRecords(),target=records.find(r=>r.id===id);if(!target)return;if(!confirm(`${target.calories} kcalの記録を削除しますか？`))return;saveRecords(records.filter(r=>r.id!==id));render()};
+dateInput.value=dateKey();dateInput.addEventListener("change",render);
+document.getElementById("addBtn").addEventListener("click",addRecord);
+document.getElementById("calories").addEventListener("keydown",e=>{if(e.key==="Enter")addRecord()});
+document.getElementById("memo").addEventListener("keydown",e=>{if(e.key==="Enter")addRecord()});
+render();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
 </body>
 </html>
