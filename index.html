@@ -1,77 +1,48 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#2563eb">
-<link rel="manifest" href="./manifest.json">
-<title>カロリー記録</title>
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5f8ff"><link rel="manifest" href="./manifest.json"><title>カロリー記録</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f7fb;color:#222}
-.container{max-width:520px;margin:0 auto;padding:24px 16px 40px}h1{font-size:28px;margin:0 0 20px}
-.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-label{display:block;font-weight:600;margin:12px 0 7px}label:first-child{margin-top:0}
-input{width:100%;padding:13px 14px;border:1px solid #d5d9e2;border-radius:10px;font-size:17px;background:#fff}
-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-button{border:0;border-radius:10px;cursor:pointer;font-size:16px}.add{width:100%;margin-top:14px;padding:13px;background:#2563eb;color:#fff;font-weight:700}
-.total{text-align:center;padding:8px 0 4px}.total-number{font-size:42px;font-weight:800;color:#2563eb}.unit{font-size:17px;margin-left:4px}.count{color:#666;margin-top:3px}.selected-date{font-size:14px;color:#555;margin-top:4px}
-.section-title{font-size:20px;font-weight:700;margin:0 0 12px}.record{padding:12px 0;border-top:1px solid #eee;display:flex;gap:10px;align-items:flex-start}.record:first-child{border-top:0}
-.record-main{flex:1;min-width:0}.record-top{font-weight:700;font-size:16px}.memo{color:#555;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}
-.delete{background:#f0f1f3;color:#555;padding:7px 10px;font-size:13px;flex-shrink:0}.day{padding:10px 0;border-top:1px solid #eee;display:flex;justify-content:space-between;cursor:pointer}
-.empty{color:#777;text-align:center;padding:8px 0}.hint{color:#777;font-size:13px;margin-top:6px}
-</style>
-</head>
-<body>
-<div class="container">
-<h1>カロリー記録</h1>
-<div class="card">
-<label for="recordDate">記録する日付</label>
-<input id="recordDate" type="date">
-<label for="calories">カロリー</label>
-<input id="calories" type="number" inputmode="numeric" min="1" max="10000" step="1" placeholder="例：650">
-<label for="memo">メモ（任意）</label>
-<input id="memo" type="text" maxlength="100" placeholder="例：鶏胸肉・ご飯・味噌汁">
-<div class="hint">日付を変えれば、前日などの記録も追加できます</div>
-<button class="add" id="addBtn">＋ 追加</button>
-</div>
-<div class="card"><div class="total"><div><span class="total-number" id="selectedTotal">0</span><span class="unit">kcal</span></div><div class="count" id="selectedCount">0件</div><div class="selected-date" id="selectedDateText"></div></div></div>
-<div class="card"><div class="section-title">選択日の記録</div><div id="selectedRecords"></div></div>
-<div class="card"><div class="section-title">過去の記録</div><div id="history"></div></div>
-</div>
+:root{--b:#2676ed;--p:#eaf2ff;--ink:#17243a;--muted:#78869b;--line:#e7edf5;--bg:#f5f8ff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:80px}.app{max-width:550px;margin:auto;padding:20px 15px}header,.row,.date-nav,.stat,.history-row,.setting{display:flex;align-items:center;justify-content:space-between;gap:12px}header{margin:4px 2px 18px}h1{font-size:25px;margin:0}h2{font-size:18px;margin:0}.card{background:#fff;border:1px solid #edf1f7;border-radius:19px;padding:17px;margin-bottom:14px;box-shadow:0 5px 18px #233d6208}.date-nav{margin-bottom:14px}.date-nav button{border:0;background:none;color:#77869b;font-size:25px}.date-label{font-weight:750}.eyebrow,.hint,.note{font-size:12px;color:var(--muted)}.kcal{background:linear-gradient(135deg,#fff,#f0f7ff)}.big{font-size:36px;font-weight:850;margin:7px 0}.big small,.value small{font-size:14px;color:var(--muted);font-weight:650}.progress{height:9px;border-radius:99px;background:#e7edf5;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#48d6a3,#17b981);width:0}.goal{display:flex;justify-content:space-between;margin-top:9px;font-size:12px;color:var(--muted)}.stat-icon{font-size:22px;background:#eaf3ff;padding:10px;border-radius:13px}.stat-main{flex:1}.value{font-size:26px;font-weight:850}.section{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 10px}.link{border:0;background:none;color:var(--b);font-size:13px;font-weight:700}.record,.history-row{padding:12px 0;border-top:1px solid var(--line)}.record:first-child,.history-row:first-child{border-top:0}.record{display:flex;align-items:flex-start;gap:10px}.record-main{flex:1;min-width:0}.record-line{font-size:14px;font-weight:750}.memo{font-size:13px;color:#64748b;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}.delete{border:0;border-radius:9px;background:#f2f5f9;color:#7b8798;padding:7px 9px;font-size:12px}.empty{text-align:center;color:#93a0b2;font-size:13px;padding:14px 0}.primary{border:0;border-radius:14px;background:linear-gradient(100deg,#3486ff,#1767e8);color:white;font-weight:800;padding:14px;width:100%}.secondary{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;width:100%;color:#536177}.page{display:none}.page.active{display:block}.tabs,.ranges{display:flex;gap:4px;padding:4px;background:#f0f4fa;border-radius:13px;margin-bottom:17px}.tabs button,.ranges button{flex:1;border:0;border-radius:10px;padding:10px 5px;background:transparent;color:#8290a4;font-size:13px;font-weight:750}.tabs button.active,.ranges button.active{background:var(--b);color:white}label{display:block;font-size:13px;font-weight:750;color:#5c6b81;margin:14px 0 7px}input,textarea{width:100%;border:1px solid #dfe6f0;background:white;border-radius:12px;padding:13px;font:inherit;font-size:16px;color:var(--ink)}textarea{min-height:70px;resize:vertical}.hidden{display:none!important}.chart{width:100%;height:210px;display:block}.history-row{cursor:pointer}.history-row>div:first-child{flex:1}.history-date{font-weight:750;font-size:14px}.history-sub{font-size:12px;color:#8290a4;margin-top:4px}.history-right{text-align:right;font-size:13px;font-weight:750;white-space:nowrap}.setting{padding:13px 0;border-bottom:1px solid var(--line)}.setting span{font-size:14px;font-weight:700}.setting input{width:120px;text-align:right}.bottom{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(14px);border-top:1px solid #e8edf5;padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center}.nav{max-width:550px;width:100%;display:flex}.nav button{flex:1;border:0;background:transparent;color:#8794a8;font-size:11px;font-weight:700;padding:3px;display:flex;flex-direction:column;align-items:center;gap:3px}.nav button b{font-size:20px}.nav button.active{color:var(--b)}.toast{display:none;position:fixed;bottom:95px;left:50%;transform:translateX(-50%);background:#17243a;color:#fff;padding:11px 16px;border-radius:12px;font-size:13px;z-index:8;white-space:nowrap}
+</style></head><body><main class="app">
+<header><h1>カロリー記録</h1><button class="link" onclick="page('settings')">⚙ 設定</button></header>
+<section id="p-home" class="page active">
+<div class="date-nav"><button onclick="shift(-1)">‹</button><div id="dateLabel" class="date-label"></div><button onclick="shift(1)">›</button></div>
+<div class="card kcal"><div class="eyebrow">🔥　摂取カロリー</div><div class="big"><span id="total">0</span><small> kcal / <span id="goalText">3,000</span> kcal</small></div><div class="progress"><div id="fill" class="fill"></div></div><div class="goal"><span id="left">目標まであと3,000 kcal</span><span id="percent">0%</span></div></div>
+<div class="card stat"><div class="stat-icon">⚖️</div><div class="stat-main"><div class="eyebrow">体重</div><div class="value"><span id="weight">--</span> <small>kg</small></div><div id="weightNote" class="note">この日付の体重は未記録</div></div><svg id="spark" width="82" height="38" viewBox="0 0 100 42"></svg></div>
+<div class="section"><h2 id="recordsTitle">今日の記録</h2><button class="link" onclick="page('history')">過去の記録 ›</button></div><div id="records" class="card"></div><button class="primary" onclick="page('add')">＋ 記録を追加</button>
+</section>
+<section id="p-add" class="page"><div class="section" style="margin-top:0"><h2>記録を追加</h2></div><div class="card">
+<div class="tabs"><button id="tc" class="active" onclick="mode('cal')">カロリー</button><button id="tw" onclick="mode('weight')">体重</button></div>
+<label for="entryDate">日付</label><input id="entryDate" type="date">
+<div id="calFields"><label for="calories">摂取カロリー（kcal）</label><input id="calories" type="number" min="1" max="10000" inputmode="numeric" placeholder="例：650"><label for="memo">メモ（任意）</label><textarea id="memo" maxlength="200" placeholder="例：鶏胸肉・ご飯・味噌汁"></textarea><p class="hint">日付を変えると前日の分も追加できます。</p></div>
+<div id="weightFields" class="hidden"><label for="weightInput">体重（kg）</label><input id="weightInput" type="number" min="20" max="300" step="0.1" inputmode="decimal" placeholder="例：72.5"><label for="weightMemo">メモ（任意）</label><textarea id="weightMemo" maxlength="200" placeholder="例：起床後・朝食前"></textarea><p class="hint">同じ日付の体重を再入力すると、その日の記録を更新します。</p></div>
+<button class="primary" style="margin-top:12px" onclick="save()">保存する</button><button class="secondary" style="margin-top:9px" onclick="page('home')">キャンセル</button></div></section>
+<section id="p-graphs" class="page"><div class="section" style="margin-top:0"><h2>グラフ</h2></div><div class="card"><div class="ranges"><button class="active" onclick="range(7,this)">1週間</button><button onclick="range(30,this)">1か月</button><button onclick="range(90,this)">3か月</button></div><div class="section"><h2>体重の推移</h2><span class="eyebrow">kg</span></div><div id="weightChart"></div><p id="weightHint" class="hint"></p></div><div class="card"><div class="section"><h2>摂取カロリー</h2><span class="eyebrow">kcal / 日</span></div><div id="calChart"></div></div></section>
+<section id="p-history" class="page"><div class="section" style="margin-top:0"><h2>過去の記録</h2></div><div id="history" class="card"></div></section>
+<section id="p-settings" class="page"><div class="section" style="margin-top:0"><h2>設定</h2></div><div class="card"><div class="setting"><span>1日のカロリー目標</span><input id="goalInput" type="number" min="500" max="10000" step="100" value="3000"></div><button class="primary" style="margin-top:14px" onclick="saveGoal()">目標を保存</button></div><div class="card"><h2>データのバックアップ</h2><p class="hint">記録はこの端末のブラウザ内に保存されます。ブラウザのデータを消去すると記録も消えるため、時々バックアップしてください。</p><button class="secondary" onclick="backup()">バックアップ（JSON）を保存</button></div></section>
+</main>
+<nav class="bottom"><div class="nav"><button data-p="home" class="active" onclick="page('home')"><b>⌂</b>ホーム</button><button data-p="graphs" onclick="page('graphs')"><b>⌁</b>グラフ</button><button data-p="history" onclick="page('history')"><b>▤</b>過去の記録</button><button data-p="settings" onclick="page('settings')"><b>⚙</b>設定</button></div></nav><div id="toast" class="toast"></div>
 <script>
-const STORAGE_KEY="calorie-records-v1",dateInput=document.getElementById("recordDate");
-function loadRecords(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")}catch{return[]}}
-function saveRecords(r){localStorage.setItem(STORAGE_KEY,JSON.stringify(r))}
-function dateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return`${y}-${m}-${day}`}
-function timeText(i){return new Date(i).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})}
-function escapeHtml(t){const d=document.createElement("div");d.textContent=t??"";return d.innerHTML}
-function formatDate(s){const[a,b,c]=s.split("-");return`${a}年${Number(b)}月${Number(c)}日`}
-function render(){
- const records=loadRecords(),selected=dateInput.value||dateKey();
- const sr=records.filter(r=>r.date===selected).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
- const total=sr.reduce((s,r)=>s+r.calories,0);
- document.getElementById("selectedTotal").textContent=total.toLocaleString("ja-JP");
- document.getElementById("selectedCount").textContent=`${sr.length}件`;
- document.getElementById("selectedDateText").textContent=formatDate(selected);
- document.getElementById("selectedRecords").innerHTML=sr.length?sr.map(r=>`<div class="record"><div class="record-main"><div class="record-top">${timeText(r.createdAt)}　${r.calories.toLocaleString("ja-JP")} kcal</div>${r.memo?`<div class="memo">${escapeHtml(r.memo)}</div>`:""}</div><button class="delete" onclick="deleteRecord('${r.id}')">削除</button></div>`).join(""):'<div class="empty">この日の記録はありません</div>';
- const groups={};records.forEach(r=>groups[r.date]=(groups[r.date]||0)+r.calories);
- const dates=Object.keys(groups).sort().reverse();
- document.getElementById("history").innerHTML=dates.length?dates.map(d=>`<div class="day" onclick="selectDate('${d}')"><span>${formatDate(d)}</span><strong>${groups[d].toLocaleString("ja-JP")} kcal</strong></div>`).join(""):'<div class="empty">まだ記録がありません</div>';
-}
-function selectDate(d){dateInput.value=d;render()}
-function addRecord(){
- const ci=document.getElementById("calories"),mi=document.getElementById("memo"),cal=Number(ci.value),date=dateInput.value||dateKey(),memo=mi.value.trim();
- if(!Number.isInteger(cal)||cal<1||cal>10000){alert("カロリーは1〜10,000 kcalの整数で入力してください。");ci.focus();return}
- const records=loadRecords();records.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,calories:cal,memo,date,createdAt:new Date().toISOString()});
- saveRecords(records);ci.value="";mi.value="";ci.focus();render();
-}
-window.deleteRecord=function(id){const records=loadRecords(),target=records.find(r=>r.id===id);if(!target)return;if(!confirm(`${target.calories} kcalの記録を削除しますか？`))return;saveRecords(records.filter(r=>r.id!==id));render()};
-dateInput.value=dateKey();dateInput.addEventListener("change",render);
-document.getElementById("addBtn").addEventListener("click",addRecord);
-document.getElementById("calories").addEventListener("keydown",e=>{if(e.key==="Enter")addRecord()});
-document.getElementById("memo").addEventListener("keydown",e=>{if(e.key==="Enter")addRecord()});
-render();
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
-</script>
-</body>
-</html>
+const CK="calorie-records-v1",WK="weight-records-v1",GK="calorie-goal-v1";let selected=today(),entryMode="cal",days=7;
+function today(){return key(new Date())}function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function data(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch{return []}}function cals(){return data(CK)}function weights(){return data(WK)}function saveData(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function goal(){return Number(localStorage.getItem(GK)||3000)}function fmt(n){return Number(n).toLocaleString("ja-JP")}function id(){return crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()}
+function label(d){let [y,m,day]=d.split("-").map(Number),dt=new Date(y,m-1,day);return `${y}年${m}月${day}日（${"日月火水木金土"[dt.getDay()]}）`}function short(d){let [,m,day]=d.split("-");return `${Number(m)}/${Number(day)}`}function time(s){return new Date(s).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})}function esc(s){let e=document.createElement("div");e.textContent=s||"";return e.innerHTML}
+function toast(s){let e=document.getElementById("toast");e.textContent=s;e.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>e.style.display="none",2000)}
+function page(p){document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));document.getElementById("p-"+p).classList.add("active");document.querySelectorAll(".nav button").forEach(e=>e.classList.toggle("active",e.dataset.p===p));if(p==="add"){document.getElementById("entryDate").value=selected;mode(entryMode)}if(p==="graphs")graphs();if(p==="history")renderHistory();if(p==="settings")document.getElementById("goalInput").value=goal();window.scrollTo(0,0)}
+function shift(n){let [y,m,d]=selected.split("-").map(Number);selected=key(new Date(y,m-1,d+n));home()}
+function mode(m){entryMode=m;tc.classList.toggle("active",m==="cal");tw.classList.toggle("active",m==="weight");calFields.classList.toggle("hidden",m!=="cal");weightFields.classList.toggle("hidden",m!=="weight")}
+function save(){let date=entryDate.value||today();if(entryMode==="cal"){let v=Number(calories.value),memoVal=memo.value.trim();if(!Number.isInteger(v)||v<1||v>10000){alert("カロリーは1〜10,000 kcalの整数で入力してください。");return}let a=cals();a.push({id:id(),calories:v,memo:memoVal,date,createdAt:new Date().toISOString()});saveData(CK,a);calories.value="";memo.value=""}else{let v=Number(weightInput.value),memoVal=weightMemo.value.trim();if(!Number.isFinite(v)||v<20||v>300){alert("体重は20〜300 kgで入力してください。");return}let a=weights(),i=a.findIndex(r=>r.date===date),r={id:i>=0?a[i].id:id(),weight:Math.round(v*10)/10,memo:memoVal,date,createdAt:new Date().toISOString()};if(i>=0)a[i]=r;else a.push(r);saveData(WK,a);weightInput.value="";weightMemo.value=""}selected=date;page("home");home();toast(entryMode==="cal"?"カロリーを記録しました":"体重を記録しました")}
+function home(){let a=cals().filter(r=>r.date===selected).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)),sum=a.reduce((s,r)=>s+r.calories,0),g=goal(),w=weights().find(r=>r.date===selected);dateLabel.textContent=label(selected);recordsTitle.textContent=selected===today()?"今日の記録":label(selected)+"の記録";total.textContent=fmt(sum);goalText.textContent=fmt(g);fill.style.width=Math.min(100,sum/g*100)+"%";left.textContent=sum>=g?`目標達成！ ${fmt(sum-g)} kcal超過`:`目標まであと${fmt(g-sum)} kcal`;percent.textContent=Math.round(sum/g*100)+"%";weight.textContent=w?w.weight.toFixed(1):"--";let prev=weights().filter(r=>r.date<selected).sort((a,b)=>b.date.localeCompare(a.date))[0];weightNote.textContent=w?(prev?`前回比 ${w.weight-prev.weight>0?"+":""}${(w.weight-prev.weight).toFixed(1)} kg`:"記録済み"):"この日付の体重は未記録";
+let html=w?`<div class="record"><div class="record-main"><div class="record-line">⚖️　体重　${w.weight.toFixed(1)} kg</div>${w.memo?`<div class="memo">${esc(w.memo)}</div>`:""}</div><button class="delete" onclick="editWeight('${w.date}')">編集</button></div>`:"";html+=a.map(r=>`<div class="record"><div class="record-main"><div class="record-line">${time(r.createdAt)}　${fmt(r.calories)} kcal</div>${r.memo?`<div class="memo">${esc(r.memo)}</div>`:""}</div><button class="delete" onclick="delCal('${r.id}')">削除</button></div>`).join("");records.innerHTML=html||'<div class="empty">まだ記録がありません</div>';spark()}
+function spark(){let a=weights().sort((x,y)=>x.date.localeCompare(y.date)).slice(-8),svg=document.getElementById("spark");if(a.length<2){svg.innerHTML="";return}let v=a.map(x=>x.weight),lo=Math.min(...v)-.2,hi=Math.max(...v)+.2,pts=v.map((z,i)=>`${5+i*90/(v.length-1)},${34-(z-lo)/(hi-lo||1)*26}`);svg.innerHTML=`<polyline points="${pts.join(" ")}" fill="none" stroke="#2676ed" stroke-width="2.5"/>`+pts.map(p=>{let [x,y]=p.split(",");return `<circle cx="${x}" cy="${y}" r="2.8" fill="#2676ed"/>`}).join("")}
+function delCal(i){let a=cals(),r=a.find(x=>x.id===i);if(!r||!confirm(`${r.calories} kcalの記録を削除しますか？`))return;saveData(CK,a.filter(x=>x.id!==i));home();toast("削除しました")}
+function editWeight(d){let w=weights().find(x=>x.date===d);page("add");entryDate.value=d;mode("weight");weightInput.value=w.weight;weightMemo.value=w.memo||""}
+function range(n,b){days=n;document.querySelectorAll(".ranges button").forEach(x=>x.classList.remove("active"));b.classList.add("active");graphs()}
+function chart(items,k,bars=false){let vals=items.map(x=>x[k]).filter(x=>x!==null);if(!vals.length)return '<div class="empty">まだデータがありません</div>';let lo=bars?0:Math.min(...vals),hi=Math.max(...vals);if(hi===lo)hi+=1;let pad=(hi-lo)*.12;lo=Math.max(0,lo-pad);hi+=pad;let W=320,H=200,L=38,R=8,T=12,B=28,pw=W-L-R,ph=H-T-B,x=i=>L+(items.length<2?pw/2:i/(items.length-1)*pw),y=v=>T+(hi-v)/(hi-lo)*ph,out="";for(let i=0;i<4;i++){let v=lo+(hi-lo)*i/3,yy=y(v);out+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e9eef5"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="10" fill="#8290a4">${Math.round(v)}</text>`}if(bars){let bw=Math.max(3,Math.min(14,pw/items.length*.55));items.forEach((it,i)=>{if(it[k]===null)return;let yy=y(it[k]);out+=`<rect x="${x(i)-bw/2}" y="${yy}" width="${bw}" height="${T+ph-yy}" rx="3" fill="#2676ed"/>`})}else{let pts=items.map((it,i)=>it[k]===null?null:[x(i),y(it[k])]).filter(Boolean);if(pts.length)out+=`<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#2676ed" stroke-width="2.5"/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#2676ed"/>`).join("")}let labs=[...new Set([0,Math.floor((items.length-1)/2),items.length-1])];labs.forEach(i=>out+=`<text x="${x(i)}" y="${H-7}" text-anchor="middle" font-size="10" fill="#8290a4">${short(items[i].date)}</text>`);return `<svg class="chart" viewBox="0 0 ${W} ${H}">${out}</svg>`}
+function graphDates(n){return Array.from({length:n},(_,i)=>{let d=new Date();d.setDate(d.getDate()-n+1+i);return key(d)})}
+function graphs(){let ds=graphDates(days),w=weights(),c=cals(),wi=ds.map(date=>({date,weight:(w.find(r=>r.date===date)||{}).weight??null})),ci=ds.map(date=>({date,kcal:c.filter(r=>r.date===date).reduce((s,r)=>s+r.calories,0)}));weightChart.innerHTML=chart(wi,"weight");weightHint.textContent=w.filter(r=>r.date>=ds[0]&&r.date<=ds.at(-1)).length+"日分の体重記録";calChart.innerHTML=chart(ci,"kcal",true)}
+function renderHistory(){let c=cals(),w=weights(),ds=[...new Set([...c.map(r=>r.date),...w.map(r=>r.date)])].sort().reverse();document.getElementById("history").innerHTML=ds.length?ds.map(d=>{let sum=c.filter(r=>r.date===d).reduce((s,r)=>s+r.calories,0),ww=w.find(r=>r.date===d);return `<div class="history-row" onclick="selected='${d}';page('home');home()"><div><div class="history-date">${label(d)}</div><div class="history-sub">${c.filter(r=>r.date===d).length}件のカロリー記録</div></div><div class="history-right">${fmt(sum)} kcal<br><span style="color:#738198">${ww?ww.weight.toFixed(1)+" kg":"-- kg"}</span></div></div>`}).join(""):'<div class="empty">まだ記録がありません</div>'}
+function saveGoal(){let v=Number(goalInput.value);if(!Number.isInteger(v)||v<500||v>10000){alert("目標は500〜10,000 kcalで入力してください。");return}localStorage.setItem(GK,v);home();graphs();toast("目標を保存しました")}
+function backup(){let d={exportedAt:new Date().toISOString(),calories:cals(),weights:weights(),dailyCalorieGoal:goal()},blob=new Blob([JSON.stringify(d,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="calorie-backup-"+today()+".json";a.click();URL.revokeObjectURL(url)}
+document.getElementById("entryDate").value=selected;home();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script></body></html>
